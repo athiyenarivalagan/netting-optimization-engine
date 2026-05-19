@@ -1,29 +1,32 @@
 def find_cycles(graph):
     """
-    • Detects cycles in a directed graph using DFS with recusive stack tracking.
-    • A cycle is detected when a node is revisted while still in the current DFS
-      path (recursion stack). 
+    Detects cycles in a directed graph using DFS with recusive stack tracking.
+
+    Args: 
+        graph:
+            Directed, weighted adjacency list.
     
-    • Args: 
-        graph (Dict[str, List[Tuple[str, int]]]): Adjacency list representation
-        of a directed, weighted graph.
-    • Returns:
-        List[List[str]]: List of cycles, where each cycle is represented as a list 
-        of nodes.
+    Returns:
+        List of cycles.
     """
     cycles = []
-    state = {} # 0 = unvisited, 1 = visiting, 2 = visited
+    # DFS traversal state:
+    # 0 = unvisited
+    # 1 = visiting (when entering)
+    # 2 = visited (on exit)
+    state = {} 
     path = []
 
     def dfs(node): 
+        # Back-edge detected -> extract cycle
         if state.get(node, 0) == 1:
-            # Found a cycle -> extract from current path
             cycle_start = path.index(node)
             cycles.append(path[cycle_start: ])
             return
 
-        if state.get(node, 0) == 2:
-            return # already processed
+        # Skip processed nodes
+        if state.get(node, 0) == 2: 
+            return 
         
         state[node] = 1
         path.append(node) 
@@ -34,7 +37,7 @@ def find_cycles(graph):
         path.pop()
         state[node] = 2
 
-    for node in graph: # A, B, C, D
+    for node in graph:
         if state.get(node, 0) == 0:
             dfs(node)
     

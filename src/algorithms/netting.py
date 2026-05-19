@@ -1,22 +1,25 @@
 def net_cycle(graph, cycle):
-    # Net the cycle by subtracting the smallest edge amount
-    # from every edge in the cycle.
-
+    """
+    Reduce flow across a cycle by subtracting the minimum edge weight
+    from every edge in the cycle.
+    """
     min_flow = float('inf')
 
-    # Find the smallest edge amount in the cycle.
-    for i in range(len(cycle)):
+    # Identify bottleneck flow within the cycle
+    n = len(cycle)
+    for i in range(n):
         u = cycle[i]
-        v = cycle[(i + 1) % len(cycle)] # wrap last node back to first
+        # Find the next node in the cycle
+        v = cycle[(i + 1) % n]  
 
-        for _, (neighbour, amt) in enumerate(graph[u]):
+        for neighbour, amt in graph[u]:
             if neighbour == v:
                 min_flow = min(min_flow, amt)
 
-    # Subtract min_flow from each edge in the cycle
-    for i in range(len(cycle)):
+    # Apply flow reduction across the cycle
+    for i in range(n):
         u = cycle[i]
-        v = cycle[(i + 1) % len(cycle)]
+        v = cycle[(i + 1) % n]
 
         for idx, (neighbour, amt) in enumerate(graph[u]):
             if neighbour == v:

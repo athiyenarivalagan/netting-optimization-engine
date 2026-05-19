@@ -2,21 +2,27 @@ from src.graph.builder import build_graph
 from src.algorithms.cycle_detection import find_cycles
 from src.algorithms.netting import net_cycle
 
-class NettingEngine:
+class CycleNettingEngine:
     """
-    Coordinates the end-to end payment netting workflow:
+    Coordinate the cycle-based payment netting workflow:
         1. Build the payment graph
-        2. Detect cycles
-        3. Net reducible flows
+        2. Detect reducible cycles
+        3. Apply cycle flow reduction
     """
     def __init__(self, payments):
         self.payments = payments
         self.graph = build_graph(payments)
 
+    def __repr__(self):
+        return (
+            f"Payments: {self.payments}",
+            f"Graph: {self.graph}"
+        )
+
     def run(self):
         cycles = find_cycles(self.graph)
 
-        # Prefer shorter cycles first before resolving overlaps
+        # Prioritize smaller cycles before overlap resolution
         cycles = sorted(cycles, key=len)
 
         filtered_cycles = []
@@ -40,6 +46,4 @@ class NettingEngine:
             netted = net_cycle(self.graph, cycle)
             total_netted += netted
 
-        # print("Cycles found:", cycles)
-        # print("Filtered cycles:", filtered_cycles)
         return total_netted, self.graph

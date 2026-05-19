@@ -1,1 +1,0 @@
-# Strongly Connected Components (Tarjan)

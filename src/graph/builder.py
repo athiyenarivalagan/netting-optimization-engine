@@ -15,8 +15,13 @@ def build_graph(payments):
     • Returns:
         defaultdict(list): Adjacency list representation of the graph
     """
+
     graph = defaultdict(list)
+
     for p in payments:
-        graph[p.payer].append((p.receiver, p.amount))
+        graph[p.sender].append((p.receiver, p.amount))
+        
+        # Ensure receiver exists as a node
+        graph[p.receiver] 
 
     return graph
