@@ -1,16 +1,23 @@
 # from tests.simple_cycle_case import payments
-from tests.multi_scc_case import payments
+from tests.test_multi_scc import payments
+
 from src.engine.cycle_netting_engine import CycleNettingEngine
 from src.engine.settlement_engine import SettlementEngine
+from src.engine.or_settlement_engine import SettlementOptimizationEngine
 
 
 def compute_gross(payments):
     """Returns the total gross payment volume before netting"""
     return sum(p.amount for p in payments)
 
+
 gross = compute_gross(payments)
 
-# Strategy 1
+
+# =========================================================
+# Strategy 1: Cycle Netting
+# =========================================================
+
 cycle_engine = CycleNettingEngine(payments)
 
 _, cycle_graph = cycle_engine.run()
@@ -27,29 +34,63 @@ cycle_efficiency = (
 ) / gross
 
 
-# Strategy 2
+# =========================================================
+# Strategy 2: Greedy Settlement Compression
+# =========================================================
+
 settlement_engine = SettlementEngine(payments)
 
-settlements = settlement_engine.run()
+greedy_settlements = settlement_engine.run()
 
-settlement_remaining = sum(
+greedy_remaining = sum(
     amount
-    for _, _, amount in settlements
+    for _, _, amount in greedy_settlements
 )
 
-settlement_efficiency = (
-    gross - settlement_remaining
+greedy_efficiency = (
+    gross - greedy_remaining
 ) / gross
 
 
+# =========================================================
+# Strategy 3: OR-Tools Settlement Optimization
+# =========================================================
+
+optimization_engine = SettlementOptimizationEngine(payments)
+
+or_settlements = optimization_engine.run()
+
+or_remaining = sum(
+    amount
+    for _, _, amount in or_settlements
+)
+
+or_efficiency = (
+    gross - or_remaining
+) / gross
+
+
+# =========================================================
+# Results
+# =========================================================
+
 print("=== Strategy Comparison ===")
 
-print(f"Gross Exposure: {gross}")
+print(f"\nGross Exposure: {gross}")
 
-print("\nCycle Netting:")
+
+print("\n1. Cycle Netting")
 print(f"Remaining: {cycle_remaining}")
 print(f"Efficiency: {cycle_efficiency:.2%}")
 
-print("\nSettlement Compression:")
-print(f"Remaining: {settlement_remaining}")
-print(f"Efficiency: {settlement_efficiency:.2%}")
+
+print("\n2. Greedy Settlement Compression")
+print(f"Remaining: {greedy_remaining}")
+print(f"Efficiency: {greedy_efficiency:.2%}")
+print(f"Transactions: {len(greedy_settlements)}")
+
+
+print("\n3. OR-Tools Settlement Optimization")
+print(f"Remaining: {or_remaining}")
+print(f"Efficiency: {or_efficiency:.2%}")
+print(f"Transactions: {len(or_settlements)}")

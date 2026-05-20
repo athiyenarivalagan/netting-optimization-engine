@@ -3,10 +3,10 @@ from src.graph.builder import build_graph
 from src.algorithms.kosaraju import kosaraju_scc
 from src.algorithms.scc_filter import build_cyclic_subgraphs
 from src.algorithms.balance import compute_balances
-from src.algorithms.greedy_settlement import compress_settlements
+from src.algorithms.or_optimizer import optimize_settlements
 
 
-class SettlementEngine:
+class SettlementOptimizationEngine:
     """
     Coordinate SCC-based settlement compression workflow.
     """
@@ -29,11 +29,8 @@ class SettlementEngine:
         
         # Compute participant net balances
         balances = compute_balances(subgraphs)
-        # print(f"balances: {balances}")
         
         # Generate compressed settlement flow
-        settlements = compress_settlements(balances)
-        # print(f"\nsettlements: {settlements}")
-        # return
+        settlements = optimize_settlements(balances)
 
         return settlements
