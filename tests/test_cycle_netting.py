@@ -1,5 +1,3 @@
-# tests/test_case_1
-
 from src.models.payment import Payment
 
 payments = [

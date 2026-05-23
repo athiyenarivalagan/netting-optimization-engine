@@ -4,7 +4,7 @@ from src.algorithms.netting import net_cycle
 
 class CycleNettingEngine:
     """
-    Coordinate the cycle-based payment netting workflow:
+    Local cycle reduction using DFS-based cycle detection:
         1. Build the payment graph
         2. Detect reducible cycles
         3. Apply cycle flow reduction
@@ -12,12 +12,6 @@ class CycleNettingEngine:
     def __init__(self, payments):
         self.payments = payments
         self.graph = build_graph(payments)
-
-    def __repr__(self):
-        return (
-            f"Payments: {self.payments}",
-            f"Graph: {self.graph}"
-        )
 
     def run(self):
         cycles = find_cycles(self.graph)

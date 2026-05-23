@@ -8,32 +8,26 @@ from src.algorithms.greedy_settlement import compress_settlements
 
 class SettlementEngine:
     """
-    Coordinate SCC-based settlement compression workflow.
+    Global greedy settlement compression using net balances.
     """
     def __init__(self, payments):
         self.payments = payments
         self.graph = build_graph(payments)
 
-    # def __repr__(self):
-    #     return f"Payments: {self.payments} Graph: {self.graph}"
-
     def run(self):
-        # Identify strongly connected payment group 
+        # SCC analysis (kept for diagnostics / graph analysis)
         sccs = kosaraju_scc(self.graph)
-        
-        # Extract cyclic SCC subgraphs
+
+        # Cyclic subgraphs (used only for analysis/debugging)
         subgraphs = build_cyclic_subgraphs(
             self.graph,
             sccs
         )
-        
-        # Compute participant net balances
-        balances = compute_balances(subgraphs)
-        # print(f"balances: {balances}")
+
+        # GLOBAL balances across full graph
+        balances = compute_balances(self.graph)
         
         # Generate compressed settlement flow
         settlements = compress_settlements(balances)
-        # print(f"\nsettlements: {settlements}")
-        # return
 
         return settlements

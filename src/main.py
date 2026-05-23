@@ -1,5 +1,6 @@
-# from tests.simple_cycle_case import payments
-from tests.test_multi_scc import payments
+from tests.test_complex_graph import payments
+# from tests.test_cycle_netting import payments
+# from tests.test_acyclic_settlement import payments
 
 from src.engine.cycle_netting_engine import CycleNettingEngine
 from src.engine.settlement_engine import SettlementEngine
@@ -42,13 +43,13 @@ settlement_engine = SettlementEngine(payments)
 
 greedy_settlements = settlement_engine.run()
 
-greedy_remaining = sum(
+greedy_flow = sum(
     amount
     for _, _, amount in greedy_settlements
 )
 
 greedy_efficiency = (
-    gross - greedy_remaining
+    gross - greedy_flow
 ) / gross
 
 
@@ -60,13 +61,13 @@ optimization_engine = SettlementOptimizationEngine(payments)
 
 or_settlements = optimization_engine.run()
 
-or_remaining = sum(
+or_flow = sum(
     amount
     for _, _, amount in or_settlements
 )
 
 or_efficiency = (
-    gross - or_remaining
+    gross - or_flow
 ) / gross
 
 
@@ -80,17 +81,17 @@ print(f"\nGross Exposure: {gross}")
 
 
 print("\n1. Cycle Netting")
-print(f"Remaining: {cycle_remaining}")
+print(f"Remaining Exposure: {cycle_remaining}")
 print(f"Efficiency: {cycle_efficiency:.2%}")
 
 
 print("\n2. Greedy Settlement Compression")
-print(f"Remaining: {greedy_remaining}")
+print(f"Settlement Flow: {greedy_flow}")
 print(f"Efficiency: {greedy_efficiency:.2%}")
 print(f"Transactions: {len(greedy_settlements)}")
 
 
 print("\n3. OR-Tools Settlement Optimization")
-print(f"Remaining: {or_remaining}")
+print(f"Settlement Flow: {or_flow}")
 print(f"Efficiency: {or_efficiency:.2%}")
 print(f"Transactions: {len(or_settlements)}")

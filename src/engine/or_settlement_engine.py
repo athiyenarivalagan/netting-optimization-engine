@@ -8,29 +8,35 @@ from src.algorithms.or_optimizer import optimize_settlements
 
 class SettlementOptimizationEngine:
     """
-    Coordinate SCC-based settlement compression workflow.
+    Global MIP-based settlement optimization using OR-Tools and SCIP.
     """
+
     def __init__(self, payments):
         self.payments = payments
         self.graph = build_graph(payments)
 
-    # def __repr__(self):
-    #     return f"Payments: {self.payments} Graph: {self.graph}"
-
     def run(self):
-        # Identify strongly connected payment group 
+
+        # SCC analysis (kept for diagnostics / graph analysis)
         sccs = kosaraju_scc(self.graph)
-        
-        # Extract cyclic SCC subgraphs
+        # print("\nSCCs:", sccs)
+
+        # Cyclic subgraphs (used only for analysis/debugging)
         subgraphs = build_cyclic_subgraphs(
             self.graph,
             sccs
         )
-        
-        # Compute participant net balances
-        balances = compute_balances(subgraphs)
-        
-        # Generate compressed settlement flow
+
+        # print("\nCyclic subgraphs:", subgraphs)
+
+        # GLOBAL balances across full graph
+        balances = compute_balances(self.graph)
+
+        print("\nNet balances:", balances)
+
+        # Global MIP settlement optimization
         settlements = optimize_settlements(balances)
+
+        # print("\nOptimized settlements:", settlements)
 
         return settlements

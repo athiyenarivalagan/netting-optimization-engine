@@ -1,3 +1,8 @@
+"""
+Kosaraju-based strongly connected component (SCC)
+decomposition for directed payment graphs.
+"""
+
 from collections import defaultdict
 
 def build_transpose_graph(graph):
@@ -50,7 +55,8 @@ def dfs_scc(node, transpose, visited, component):
 
 def kosaraju_scc(graph):
     """
-    Identify strongly connected components using Kosaraju's algorithm
+    Compute strongly connected components using 
+    Kosaraju's two-pass DFS algorithm.
     """
     visited = set()
     finish_order = []
